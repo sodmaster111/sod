@@ -1,14 +1,15 @@
 from fastapi import FastAPI
-
-from app.api import agents, health
 from app.core.config import settings
+from app.api import agents, health
 
-app = FastAPI(title=settings.app_name)
-app.include_router(health.router)
-app.include_router(agents.router)
+app = FastAPI(title=settings.PROJECT_NAME)
 
 
-@app.get("/", tags=["root"], summary="Root description")
-def read_root() -> dict[str, str]:
-    """Provide a short welcome message."""
-    return {"message": "SODMASTER backend is running"}
+@app.get("/")
+async def read_root():
+    return {"status": "SODMASTER AI Agency is online"}
+
+
+# все API под /api
+app.include_router(health.router, prefix="/api")
+app.include_router(agents.router, prefix="/api")
