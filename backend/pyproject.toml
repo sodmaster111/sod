@@ -1,0 +1,19 @@
+[project]
+name = "sodmaster-backend"
+version = "0.1.0"
+description = "SODMASTER FastAPI backend for local-first agents"
+authors = [{name = "SODMASTER"}]
+requires-python = ">=3.11"
+
+[tool.setuptools]
+package-dir = {"" = "app"}
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
