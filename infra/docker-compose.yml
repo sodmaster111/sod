@@ -33,5 +33,21 @@ services:
       - "11434:11434"
     restart: unless-stopped
 
+  proxy:
+    image: caddy:2-alpine
+    container_name: sod-proxy
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+
 volumes:
   ollama-data:
+  caddy-data:
+  caddy-config:
