@@ -28,6 +28,7 @@ class LocalLLMClient:
         """
         payload: Dict[str, Any] = {
             "model": self.model,
+            "stream": False,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
