@@ -1,0 +1,7 @@
+sodmaster.online {
+    reverse_proxy web:3000
+}
+
+www.sodmaster.online {
+    redir https://sodmaster.online{uri}
+}
