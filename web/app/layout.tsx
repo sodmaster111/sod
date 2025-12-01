@@ -2,19 +2,15 @@ import './globals.css'
 import type { ReactNode } from 'react'
 
 export const metadata = {
-  title: 'SODMASTER',
-  description: 'Local-first AI agency monorepo',
+  title: 'SODMASTER — цифровой дом для веры и смысла',
+  description: 'Автономный AI-проект для духовного контента: эмуна, Тора, поддержка и смысл на русском языке.',
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru">
-      <body className="min-h-screen bg-slate-50 text-slate-900">
-        <header className="border-b border-slate-800 px-6 py-4">
-          <h1 className="text-xl font-semibold">SODMASTER</h1>
-          <p className="text-sm text-slate-700">Autonomous AI agency running on local LLMs</p>
-        </header>
-        <main className="max-w-4xl mx-auto px-6 py-8 space-y-6">
+      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased">
+        <main className="min-h-screen">
           {children}
         </main>
       </body>
