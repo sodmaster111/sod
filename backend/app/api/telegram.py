@@ -1,0 +1,62 @@
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+from app.agents.base import AgentResponse
+from app.agents.llm_client import LocalLLMClient
+from app.agents.profiles import get_agent_profile
+from app.integrations.telegram import TelegramClient
+from app.core.config import settings
+
+router = APIRouter()
+
+
+class TelegramSendRequest(BaseModel):
+    text: str
+    parse_mode: str | None = "HTML"
+
+
+class AgentBroadcastRequest(BaseModel):
+    agent_name: str
+    user_prompt: str
+    parse_mode: str | None = "HTML"
+    preview_only: bool = False
+
+
+@router.post("/telegram/send")
+async def send_telegram_message(payload: TelegramSendRequest):
+    try:
+        client = TelegramClient()
+        result = await client.send_message(text=payload.text, parse_mode=payload.parse_mode)
+        return {"ok": True, "result": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/telegram/agent-broadcast", response_model=AgentResponse)
+async def agent_broadcast(payload: AgentBroadcastRequest) -> AgentResponse:
+    profile = get_agent_profile(payload.agent_name)
+    if profile is None:
+        raise HTTPException(status_code=404, detail=f"Unknown agent: {payload.agent_name}")
+
+    system_prompt = (
+        f"You are {profile.name}. "
+        f"{profile.role_description}\n"
+        f"Your goals:\n" + "\n".join(f"- {g}" for g in profile.goals)
+    )
+
+    client = LocalLLMClient()
+    text = await client.generate(system_prompt=system_prompt, user_prompt=payload.user_prompt)
+
+    # если preview_only = False — отправляем в Telegram
+    if not payload.preview_only:
+        try:
+            tg = TelegramClient()
+            await tg.send_message(text=text, parse_mode=payload.parse_mode)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Telegram send error: {e}")
+
+    return AgentResponse(
+        agent=profile.name,
+        response=text,
+        model=settings.LLM_MODEL_NAME,
+    )
