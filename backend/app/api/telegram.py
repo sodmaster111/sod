@@ -36,12 +36,12 @@ async def send_telegram_message(payload: TelegramSendRequest):
 async def agent_broadcast(payload: AgentBroadcastRequest) -> AgentResponse:
     profile = get_agent_profile(payload.agent_name)
     if profile is None:
-        raise HTTPException(status_code=404, detail=f"Unknown agent: {payload.agent_name}")
+        raise HTTPException(status_code=404, detail=f"Неизвестный агент: {payload.agent_name}")
 
     system_prompt = (
-        f"You are {profile.name}. "
+        f"Ты — {profile.name}. "
         f"{profile.role_description}\n"
-        f"Your goals:\n" + "\n".join(f"- {g}" for g in profile.goals)
+        f"Твои цели:\n" + "\n".join(f"- {g}" for g in profile.goals)
     )
 
     client = LocalLLMClient()
@@ -53,7 +53,7 @@ async def agent_broadcast(payload: AgentBroadcastRequest) -> AgentResponse:
             tg = TelegramClient()
             await tg.send_message(text=text, parse_mode=payload.parse_mode)
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Telegram send error: {e}")
+            raise HTTPException(status_code=500, detail=f"Ошибка отправки в Telegram: {e}")
 
     return AgentResponse(
         agent=profile.name,
