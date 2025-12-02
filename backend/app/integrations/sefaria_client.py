@@ -1,41 +1,40 @@
-"""Client helpers for retrieving texts from Sefaria API."""
+from typing import Literal
+from urllib.parse import quote
 
 import httpx
 
-BASE_URL = "https://www.sefaria.org/api/texts/"
+BASE_URL = "https://www.sefaria.org/api/texts"
 
 
-async def fetch_text(ref: str, lang: str = "he") -> str:
+async def fetch_text(ref: str, lang: Literal["he", "en"] = "he") -> str:
     """
-    Получает текст по ссылке ref (например: 'Tehillim 23:1') через публичное Sefaria API
-    или возвращает понятное сообщение об ошибке.
+    Получает текст Танаха по ссылке ref (например: 'Tehillim 23:1')
+    через публичное API Sefaria.
+
+    Если запрос не удался или структура другая — возвращает понятную строку-ошибку.
     """
+    url = f"{BASE_URL}/{quote(ref)}?lang={lang}&commentary=0"
 
-    url = f"{BASE_URL}{ref}"
-    params = {"lang": lang}
+    async with httpx.AsyncClient(timeout=10) as client:
+        resp = await client.get(url)
 
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get(url, params=params)
-            response.raise_for_status()
-    except httpx.HTTPError as exc:  # pragma: no cover - network errors not covered in tests
-        return f"Ошибка при обращении к Sefaria API: {exc}"
+    if resp.status_code != 200:
+        return f"Ошибка запроса к Sefaria: HTTP {resp.status_code}"
 
-    try:
-        payload = response.json()
-    except ValueError:
-        return "Некорректный ответ от Sefaria API."
+    data = resp.json()
 
-    content_key = "he" if lang == "he" else "text"
-    content = payload.get(content_key)
+    # В ответе Sefaria обычно есть поле 'he' или 'text'
+    # Попробуем вытащить основной текст.
+    if lang == "he":
+        texts = data.get("he") or data.get("text") or []
+    else:
+        texts = data.get("text") or data.get("he") or []
 
-    if isinstance(content, list):
-        content = " ".join(filter(None, content))
+    if not texts:
+        return "Текст не найден или пуст."
 
-    if not content:
-        return "Текст не найден или отсутствует."
+    # Если это список строк — склеиваем.
+    if isinstance(texts, list):
+        return "\n".join([str(line) for line in texts if line])
 
-    if not isinstance(content, str):
-        content = str(content)
-
-    return content
+    return str(texts)
