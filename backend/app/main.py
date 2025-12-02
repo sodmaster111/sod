@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api import agents, health, news, publisher
+from app.api import agents, health, news, publisher, quality
 from app.core.database import init_db
 from app.core.config import settings
 
