@@ -1,9 +1,15 @@
 from fastapi import FastAPI
 
 from app.api import agents, health, news, publisher
+from app.core.database import init_db
 from app.core.config import settings
 
 app = FastAPI(title=settings.PROJECT_NAME)
+
+
+@app.on_event("startup")
+async def on_startup():
+    init_db()
 
 
 @app.get("/")
