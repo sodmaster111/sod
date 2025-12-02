@@ -3,6 +3,6 @@ uvicorn[standard]
 pydantic
 pydantic-settings
 httpx
-
 sqlmodel
 aiosqlite
+hdate
