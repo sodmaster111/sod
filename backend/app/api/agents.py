@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from app.agents.base import AgentRequest, AgentResponse
 from app.agents.llm_client import LocalLLMClient
 from app.agents.profiles import get_agent_profile
+from app.agents.prompts import RABBI_AGENT_SYSTEM_PROMPT
 from app.core.config import settings
 
 router = APIRouter()
@@ -38,16 +39,10 @@ async def call_rabbi_agent(payload: AgentRequest):
 
     profile = get_agent_profile("rabbi_agent")
 
-    system_prompt = (
-        f"Ты — {profile.name}. "
-        f"{profile.role_description}\n"
-        f"Твои цели:\n" + "\n".join(f"- {g}" for g in profile.goals)
-    )
-
     client = LocalLLMClient()
 
     text = await client.generate(
-        system_prompt=system_prompt,
+        system_prompt=RABBI_AGENT_SYSTEM_PROMPT,
         user_prompt=payload.user_prompt,
     )
 
