@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api import agents, health, news, pipeline, publisher, quality
+from app.api import agents, health, news, publisher
 from app.core.config import settings
 
 app = FastAPI(title=settings.PROJECT_NAME)
@@ -17,4 +17,4 @@ app.include_router(agents.router, prefix="/api")
 app.include_router(news.router, prefix="/api")
 app.include_router(quality.router, prefix="/api")
 app.include_router(publisher.router, prefix="/api")
-app.include_router(pipeline.router, prefix="/api")
+app.include_router(news.router, prefix="/api")

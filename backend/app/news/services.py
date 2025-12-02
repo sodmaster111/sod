@@ -1,4 +1,8 @@
+from contextlib import contextmanager
+from typing import Iterator, List, Optional
+
 from app.agents.llm_client import LocalLLMClient
+from app.news.schemas import NewsDetail, NewsListItem
 
 
 async def summarize_news(text: str) -> str:
@@ -24,3 +28,26 @@ async def interpret_news_from_summary(summary: str) -> str:
         "Дай духовное толкование и практический вывод."
     )
     return await client.generate(system_prompt=system_prompt, user_prompt=user_prompt)
+
+
+@contextmanager
+def get_session() -> Iterator[None]:
+    """Return a dummy session placeholder.
+
+    This placeholder allows API handlers to depend on a session provider even if the
+    backing persistence layer is not yet implemented.
+    """
+
+    yield None
+
+
+def list_news_posts(_session: None, limit: int) -> List[NewsListItem]:
+    """Return a list of recent news posts (placeholder)."""
+
+    return []
+
+
+def get_news_post(_session: None, _post_id: int) -> Optional[NewsDetail]:
+    """Return a single news post (placeholder)."""
+
+    return None
