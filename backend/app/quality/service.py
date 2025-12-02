@@ -1,10 +1,5 @@
 from app.agents.llm_client import LocalLLMClient
-
-QUALITY_GUARD_SYSTEM_PROMPT = (
-    "Ты — редактор SODMASTER. Твоя задача — переписывать пользовательские тексты так, "
-    "чтобы они были вежливыми, позитивными и соответствовали тону SODMASTER. "
-    "Не добавляй лишнюю информацию, сохраняй смысл и лаконичность."
-)
+from app.agents.prompts import QUALITY_GUARD_SYSTEM_PROMPT
 
 
 async def clean_text(text: str) -> str:
