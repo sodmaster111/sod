@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.api import agents, health, news
 from app.core.config import settings
-from app.api import agents, health, quality
+from app.api import agents, health, publisher
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
@@ -15,4 +15,4 @@ async def read_root():
 # все API под /api
 app.include_router(health.router, prefix="/api")
 app.include_router(agents.router, prefix="/api")
-app.include_router(quality.router, prefix="/api")
+app.include_router(publisher.router, prefix="/api")
