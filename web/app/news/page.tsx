@@ -1,69 +1,86 @@
-import Link from 'next/link'
+"use client";
 
-interface NewsItem {
-  id: number | string
-  title: string | null
-  summary: string | null
-  created_at: string
-}
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-async function fetchNews(): Promise<NewsItem[]> {
-  const response = await fetch('http://backend:8000/api/news/list?limit=20', {
-    // Cache on the server for a short time to keep content fresh while avoiding excessive requests
-    next: { revalidate: 300 },
-  })
+type NewsItem = {
+  id: number;
+  title: string | null;
+  summary: string;
+  created_at: string;
+};
 
-  if (!response.ok) {
-    throw new Error('Failed to load news')
-  }
+export default function NewsPage() {
+  const [items, setItems] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  return response.json()
-}
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch("/api/news/list");
 
-export default async function NewsPage() {
-  const news = await fetchNews()
+        if (!res.ok) {
+          throw new Error("Failed to fetch news");
+        }
+
+        const data: NewsItem[] = await res.json();
+        setItems(data);
+      } catch (e) {
+        setError("Ошибка при запросе к серверу.");
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, []);
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-14 text-slate-100">
-      <div className="mx-auto flex max-w-3xl flex-col gap-8">
-        <header>
-          <h1 className="text-3xl font-bold sm:text-4xl">Новости</h1>
-          <p className="mt-2 text-slate-300">Свежие обновления проекта и материалы SODMASTER.</p>
-        </header>
+    <main className="min-h-screen bg-slate-950 text-slate-50">
+      <div className="max-w-3xl mx-auto px-4 py-10">
+        <h1 className="text-3xl font-semibold mb-6">Новости SODMASTER</h1>
 
-        <section className="flex flex-col gap-4">
-          {news.length === 0 ? (
-            <p className="text-slate-300">Пока нет новостей.</p>
-          ) : (
-            news.map((item) => (
-              <article
+        {loading && <p>Загрузка новостей.</p>}
+
+        {!loading && error && (
+          <p className="text-red-400 mb-4">{error}</p>
+        )}
+
+        {!loading && !error && items.length === 0 && (
+          <p>Новостей пока нет.</p>
+        )}
+
+        {!loading && !error && items.length > 0 && (
+          <ul className="space-y-4">
+            {items.map((item) => (
+              <li
                 key={item.id}
-                className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 shadow-sm transition hover:border-slate-700"
+                className="border border-slate-700 rounded-lg p-4 hover:border-slate-500 transition"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 space-y-2">
-                    <h2 className="text-xl font-semibold text-slate-50">
-                      {item.title?.trim() ? item.title : 'Без заголовка'}
-                    </h2>
-                    {item.summary && <p className="text-slate-200">{item.summary}</p>}
-                    <p className="text-sm text-slate-400">
-                      {new Date(item.created_at).toLocaleString('ru-RU')}
-                    </p>
-                  </div>
-                  <div>
-                    <Link
-                      href={`/news/${item.id}`}
-                      className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-100 transition hover:border-slate-500 hover:bg-slate-900"
-                    >
-                      Читать
-                    </Link>
-                  </div>
+                <h2 className="text-xl font-medium mb-1">
+                  {item.title || "Новость без заголовка"}
+                </h2>
+                <p className="text-sm text-slate-300 line-clamp-3 mb-2">
+                  {item.summary}
+                </p>
+                <div className="flex items-center justify-between text-xs text-slate-400">
+                  <span>
+                    {new Date(item.created_at).toLocaleString("ru-RU")}
+                  </span>
+                  <Link
+                    href={`/news/${item.id}`}
+                    className="text-sky-400 hover:text-sky-300"
+                  >
+                    Читать
+                  </Link>
                 </div>
-              </article>
-            ))
-          )}
-        </section>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </main>
-  )
+  );
 }
