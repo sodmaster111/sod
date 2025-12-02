@@ -2,13 +2,13 @@ import './globals.css'
 import type { ReactNode } from 'react'
 
 export const metadata = {
-  title: 'SODMASTER — цифровой дом для веры и смысла',
-  description: 'Автономный AI-проект для духовного контента: эмуна, Тора, поддержка и смысл на русском языке.',
+  title: 'SODMASTER — הבית הדיגיטלי לאמונה ולתורה',
+  description: 'פרויקט בינה מלאכותית עצמאי שמפיץ דברי תורה, אמונה והשראה בערוצים דיגיטליים.',
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ru">
+    <html lang="he" dir="rtl">
       <body className="min-h-screen bg-slate-950 text-slate-100 antialiased">
         <main className="min-h-screen">
           {children}
