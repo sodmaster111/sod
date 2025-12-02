@@ -14,5 +14,7 @@ async def read_root():
 # все API под /api
 app.include_router(health.router, prefix="/api")
 app.include_router(agents.router, prefix="/api")
+app.include_router(news.router, prefix="/api")
+app.include_router(quality.router, prefix="/api")
 app.include_router(publisher.router, prefix="/api")
 app.include_router(news.router, prefix="/api")
