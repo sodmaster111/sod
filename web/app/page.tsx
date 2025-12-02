@@ -14,13 +14,13 @@ export default function Home() {
             href="#"
             className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-6 py-3 text-base font-semibold text-slate-950 hover:bg-emerald-400 transition"
           >
-            Присоединиться к группе «Лохамей а-Шем»
+            Присоединиться к группе «Лохамей а-Шем» (Telegram)
           </a>
           <a
             href="#"
             className="inline-flex items-center justify-center rounded-full border border-slate-500 px-6 py-3 text-base font-semibold hover:border-emerald-400 hover:text-emerald-300 transition"
           >
-            Подписаться на канал SODMASTER
+            Подписаться на канал SODMASTER (Telegram)
           </a>
         </div>
       </section>
