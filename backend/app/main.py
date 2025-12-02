@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+
+from app.api import agents, health, news
 from app.core.config import settings
 from app.api import agents, health, publisher
 
