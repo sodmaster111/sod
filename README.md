@@ -10,6 +10,11 @@ folders to streamline development and deployment.
 - `web/` — Next.js frontend shell prepared for integrating with the backend agents.
 - `infra/` — Docker Compose stack for orchestrating the backend, web app, reverse proxy, and Ollama.
 
+## Messaging channels
+
+- **Telegram** — primary delivery channel for automated posts and agent broadcasts.
+- **Web app** — local UI for reviewing and triggering agent workflows.
+
 ## Getting started
 
 1. Build and start the stack:
