@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api import agents, health, news, publisher, quality, texts
+from app.api import agents, health, news, publisher, quality, texts, time_status
 from app.core.database import init_db
 from app.core.config import settings
 
@@ -25,3 +25,4 @@ app.include_router(quality.router, prefix="/api")
 app.include_router(publisher.router, prefix="/api")
 app.include_router(news.router, prefix="/api")
 app.include_router(texts.router, prefix="/api")
+app.include_router(time_status.router, prefix="/api")
