@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -6,6 +8,7 @@ from app.agents.llm_client import LocalLLMClient
 from app.agents.profiles import get_agent_profile
 from app.integrations.telegram import TelegramClient
 from app.core.config import settings
+from app.utils.jewish_calendar import is_no_send_time
 
 router = APIRouter()
 
@@ -49,6 +52,9 @@ async def agent_broadcast(payload: AgentBroadcastRequest) -> AgentResponse:
 
     # если preview_only = False — отправляем в Telegram
     if not payload.preview_only:
+        now = datetime.now(timezone.utc)
+        if is_no_send_time(now):
+            raise HTTPException(status_code=403, detail="Сейчас нельзя отправлять сообщения (Шаббат или Йом-Тов)")
         try:
             tg = TelegramClient()
             await tg.send_message(text=text, parse_mode=payload.parse_mode)
