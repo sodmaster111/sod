@@ -1,60 +1,68 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
+set -e
 
-repo_root="$(git rev-parse --show-toplevel)"
-cd "$repo_root"
+# Переходим в корень репозитория относительно расположения скрипта
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
 
-summary=${1:-"Automated codex memory update"}
-timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-branch="$(git rev-parse --abbrev-ref HEAD)"
-head_commit="$(git rev-parse --short HEAD)"
+DATE_HUMAN="$(date '+%Y-%m-%d %H:%M')"
+RUN_FILE="memory/codex_runs/$(date '+%Y-%m-%d_%H-%M').md"
 
-memory_dir="$repo_root/memory/codex_runs"
-log_file="$memory_dir/run-${timestamp}.log"
-chat_memory="$repo_root/docs/chat-memory.md"
+# Убедиться, что директории существуют
+mkdir -p docs
+mkdir -p memory/codex_runs
 
-mkdir -p "$memory_dir"
-
-if [[ ! -f "$chat_memory" ]]; then
-  mkdir -p "$(dirname "$chat_memory")"
-  {
-    echo "# Codex memory log"
-    echo
-    echo "This file records Codex assistant run metadata."
-    echo
-  } > "$chat_memory"
+# 1) Обновляем docs/chat-memory.md
+if [ ! -f docs/chat-memory.md ] && [ -f docs/CHAT_MEMORY.md ]; then
+  mv docs/CHAT_MEMORY.md docs/chat-memory.md
 fi
 
-{
-  echo "timestamp: $timestamp"
-  echo "branch: $branch"
-  echo "head: $head_commit"
-  echo "summary: $summary"
-  echo
-  git status -sb
-} > "$log_file"
+if [ ! -f docs/chat-memory.md ]; then
+  cat <<EOF > docs/chat-memory.md
+# SODMASTER — CHAT MEMORY
 
-log_rel=${log_file#"$repo_root/"}
+## ✅ Текущий статус проекта
 
-cat <<EOF_LOG >> "$chat_memory"
-## $timestamp
-- Branch: $branch
-- Commit: $head_commit
-- Summary: $summary
-- Log: $log_rel
+(описать текущий статус здесь)
 
-EOF_LOG
-
-git add "$chat_memory" "$log_file"
-
-if git diff --cached --quiet; then
-  echo "No updates to commit." >&2
-else
-  git commit -m "chore: codex memory update $timestamp"
+## 🧠 Лента обновлений
+EOF
 fi
 
-if git remote | grep -q .; then
-  git push
-else
-  echo "No git remote configured; skipping push." >&2
-fi
+cat <<EOF >> docs/chat-memory.md
+
+## [$DATE_HUMAN] Codex Update
+
+- Что делали:
+- Какие файлы изменены:
+- Что получилось:
+- Текущее состояние:
+- Следующий шаг:
+
+EOF
+
+# 2) Лог отдельного запуска Codex
+cat <<EOF > "$RUN_FILE"
+# Codex Run [$DATE_HUMAN]
+
+## Цель
+-
+
+## Выполненные действия
+-
+
+## Результат
+-
+
+## Вывод
+-
+
+## Следующий шаг
+-
+EOF
+
+# 3) Фиксируем изменения в git (без падения, если нет изменений)
+git add docs/chat-memory.md memory/codex_runs || true
+git commit -m "codex: auto memory update" || true
+git push || true

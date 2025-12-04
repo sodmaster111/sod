@@ -1,10 +1,22 @@
-# Codex memory log
+# SODMASTER — CHAT MEMORY
 
-This file records Codex assistant run metadata.
+## ✅ Текущий статус проекта
 
-## 2025-12-04T09:25:20Z
-- Branch: work
-- Commit: 70b1ed5
-- Summary: Document codex memory workflow setup
-- Log: memory/codex_runs/run-2025-12-04T09:25:20Z.log
+backend/web/infra/ollama/proxy работают, сайт доступен по https://sodmaster.online
 
+## 🧠 Лента обновлений
+
+## [2025-12-04 09:34] Codex Update
+
+- Что делали:
+- Какие файлы изменены:
+- Что получилось:
+- Текущее состояние:
+- Следующий шаг:
+
+
+## [ИНИЦИАЛИЗАЦИЯ ПАМЯТИ] Codex
+
+- Настроен скрипт scripts/codex-memory-update.sh
+- После каждого запуска Codex по задачам проекта SOD он должен вызывать этот скрипт.
+- Память проекта теперь хранится в docs/chat-memory.md и memory/codex_runs/*.
